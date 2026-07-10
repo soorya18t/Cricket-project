@@ -151,7 +151,12 @@ def load_processed_data():
 
 @st.cache_resource(show_spinner=False)
 def load_model():
-    return joblib.load(MODEL_PATH) if MODEL_PATH.exists() else None
+    try:
+        return joblib.load(MODEL_PATH)
+    except Exception:
+        import traceback
+        st.code(traceback.format_exc())
+        return None
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  PART 2: FEATURE ENGINEERING & ML LOGIC (Backend)
