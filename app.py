@@ -70,20 +70,13 @@ PLAYER_ROLE_COLORS   = {"Batter": "#00F2FE", "Bowler": "#FF0844", "All-rounder":
 # ═══════════════════════════════════════════════════════════════════════════════
 @st.cache_data(show_spinner=False)
 def load_raw_data():
-    st.write("Loading deliveries...")
     deliveries = pd.read_csv(DELIVERIES_PATH, low_memory=False)
-
-    st.write("Loading matches...")
     matches = pd.read_csv(MATCHES_PATH)
-
-    st.write("Processing dates...")
     matches["date"] = pd.to_datetime(matches["date"], errors="coerce")
 
     season_mapping = {"2007/08": "2008", "2009/10": "2010", "2020/21": "2020"}
     matches["season"] = matches["season"].astype(str).replace(season_mapping)
     matches["season"] = matches["season"].str.extract(r'(\d{4})')[0]
-
-    st.write("Processing teams...")
 
     team_mapping = {
         "Delhi Daredevils": "Delhi Capitals",
@@ -101,8 +94,6 @@ def load_raw_data():
     deliveries["batting_team"] = deliveries["batting_team"].replace(team_mapping)
     deliveries["bowling_team"] = deliveries["bowling_team"].replace(team_mapping)
 
-    st.write("Processing venues...")
-
     venue_mapping = {
         "M Chinnaswamy Stadium, Bengaluru": "M. Chinnaswamy Stadium",
         "M Chinnaswamy Stadium": "M. Chinnaswamy Stadium",
@@ -112,33 +103,22 @@ def load_raw_data():
 
     matches["venue"] = matches["venue"].replace(venue_mapping)
 
-    st.write("Loading player fixes...")
-
     if FIXES_PATH.exists():
         fixes_df = pd.read_csv(FIXES_PATH)
         player_mapping = dict(zip(fixes_df["Wrong_Name"], fixes_df["Correct_Name"]))
     else:
         player_mapping = {}
 
-    st.write("Replacing player names...")
-
-    st.write("Replacing player_of_match...")
     matches["player_of_match"] = matches["player_of_match"].replace(player_mapping)
 
-    st.write("Replacing batter...")
     deliveries["batter"] = deliveries["batter"].replace(player_mapping)
 
-    st.write("Replacing bowler...")
     deliveries["bowler"] = deliveries["bowler"].replace(player_mapping)
 
-    st.write("Replacing non_striker...")
     deliveries["non_striker"] = deliveries["non_striker"].replace(player_mapping)
 
-    st.write("Replacing player_dismissed...")
     if "player_dismissed" in deliveries.columns:
        deliveries["player_dismissed"] = deliveries["player_dismissed"].replace(player_mapping)
-
-    st.write("Finished load_raw_data")
 
     return deliveries, matches
 
@@ -731,19 +711,9 @@ def section_system_setup(matches, deliveries):
 #  MAIN APP ROUTER
 # ═══════════════════════════════════════════════════════════════════════════════
 def main():
-    st.title("Debug")
-
-    st.write("1")
     deliveries, matches = load_raw_data()
-
-    st.write("2")
     player_stats, match_perf = load_processed_data()
-
-    st.write("3")
     model = load_model()
-
-    st.write("4")
-
     st.sidebar.markdown("<h2>🏏 IPL Cricket Analytics Dashboard</h2>", unsafe_allow_html=True)
     st.sidebar.markdown("---")
     
