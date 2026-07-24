@@ -728,9 +728,11 @@ def section_system_setup(matches, deliveries):
 #  MAIN APP ROUTER
 # ═══════════════════════════════════════════════════════════════════════════════
 def main():
-    deliveries, matches = load_raw_data()
-    player_stats, match_perf = load_processed_data()
-    model = load_model()
+    #deliveries, matches = load_raw_data()
+    #player_stats, match_perf = load_processed_data()
+    #model = load_model()
+    st.title("Render Test")
+    st.success("App started successfully!")
 
     st.sidebar.markdown("<h2>🏏 IPL Cricket Analytics Dashboard</h2>", unsafe_allow_html=True)
     st.sidebar.markdown("---")
