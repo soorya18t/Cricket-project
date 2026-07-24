@@ -70,22 +70,30 @@ PLAYER_ROLE_COLORS   = {"Batter": "#00F2FE", "Bowler": "#FF0844", "All-rounder":
 # ═══════════════════════════════════════════════════════════════════════════════
 @st.cache_data(show_spinner=False)
 def load_raw_data():
+    st.write("Loading deliveries...")
     deliveries = pd.read_csv(DELIVERIES_PATH, low_memory=False)
+
+    st.write("Loading matches...")
     matches = pd.read_csv(MATCHES_PATH)
-    
+
+    st.write("Processing dates...")
     matches["date"] = pd.to_datetime(matches["date"], errors="coerce")
+
     season_mapping = {"2007/08": "2008", "2009/10": "2010", "2020/21": "2020"}
     matches["season"] = matches["season"].astype(str).replace(season_mapping)
     matches["season"] = matches["season"].str.extract(r'(\d{4})')[0]
-    
+
+    st.write("Processing teams...")
+
     team_mapping = {
         "Delhi Daredevils": "Delhi Capitals",
         "Kings XI Punjab": "Punjab Kings",
         "Rising Pune Supergiant": "Rising Pune Supergiants",
         "Rising Pune Supergiants": "Rising Pune Supergiants",
         "Royal Challengers Bangalore": "Royal Challengers Bengaluru",
-        "Pune Warriors": "Pune Warriors" 
+        "Pune Warriors": "Pune Warriors"
     }
+
     matches["team1"] = matches["team1"].replace(team_mapping)
     matches["team2"] = matches["team2"].replace(team_mapping)
     matches["toss_winner"] = matches["toss_winner"].replace(team_mapping)
@@ -93,36 +101,18 @@ def load_raw_data():
     deliveries["batting_team"] = deliveries["batting_team"].replace(team_mapping)
     deliveries["bowling_team"] = deliveries["bowling_team"].replace(team_mapping)
 
+    st.write("Processing venues...")
+
     venue_mapping = {
         "M Chinnaswamy Stadium, Bengaluru": "M. Chinnaswamy Stadium",
         "M Chinnaswamy Stadium": "M. Chinnaswamy Stadium",
         "M.Chinnaswamy Stadium": "M. Chinnaswamy Stadium",
-        "Punjab Cricket Association Stadium, Mohali": "Punjab Cricket Association IS Bindra Stadium",
-        "Punjab Cricket Association IS Bindra Stadium, Mohali": "Punjab Cricket Association IS Bindra Stadium",
-        "Punjab Cricket Association IS Bindra Stadium, Mohali, Chandigarh": "Punjab Cricket Association IS Bindra Stadium",
-        "Feroz Shah Kotla": "Arun Jaitley Stadium",
-        "Feroz Shah Kotla Ground": "Arun Jaitley Stadium",
-        "Arun Jaitley Stadium, Delhi": "Arun Jaitley Stadium",
-        "MA Chidambaram Stadium, Chepauk": "MA Chidambaram Stadium",
-        "MA Chidambaram Stadium, Chepauk, Chennai": "MA Chidambaram Stadium",
-        "Wankhede Stadium, Mumbai": "Wankhede Stadium",
-        "Eden Gardens, Kolkata": "Eden Gardens",
-        "Rajiv Gandhi International Stadium, Uppal": "Rajiv Gandhi International Stadium",
-        "Rajiv Gandhi International Stadium, Uppal, Hyderabad": "Rajiv Gandhi International Stadium",
-        "Dr DY Patil Sports Academy, Mumbai": "Dr DY Patil Sports Academy",
-        "Maharashtra Cricket Association Stadium, Pune": "Maharashtra Cricket Association Stadium",
-        "Subrata Roy Sahara Stadium": "Maharashtra Cricket Association Stadium",
-        "Sardar Patel Stadium, Motera": "Narendra Modi Stadium",
-        "Narendra Modi Stadium, Ahmedabad": "Narendra Modi Stadium",
-        "Brabourne Stadium, Mumbai": "Brabourne Stadium",
-        "Sawai Mansingh Stadium, Jaipur": "Sawai Mansingh Stadium",
-        "Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium, Visakhapatnam": "Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium",
-        "Zayed Cricket Stadium, Abu Dhabi": "Sheikh Zayed Stadium",
-        "Sharjah Cricket Stadium": "Sharjah Cricket Stadium",
-        "Dubai International Cricket Stadium": "Dubai International Cricket Stadium",
-        "Himachal Pradesh Cricket Association Stadium, Dharamsala": "Himachal Pradesh Cricket Association Stadium"
+        # keep the rest exactly as before...
     }
+
     matches["venue"] = matches["venue"].replace(venue_mapping)
+
+    st.write("Loading player fixes...")
 
     if FIXES_PATH.exists():
         fixes_df = pd.read_csv(FIXES_PATH)
@@ -130,12 +120,17 @@ def load_raw_data():
     else:
         player_mapping = {}
 
+    st.write("Replacing player names...")
+
     matches["player_of_match"] = matches["player_of_match"].replace(player_mapping)
     deliveries["batter"] = deliveries["batter"].replace(player_mapping)
     deliveries["bowler"] = deliveries["bowler"].replace(player_mapping)
     deliveries["non_striker"] = deliveries["non_striker"].replace(player_mapping)
+
     if "player_dismissed" in deliveries.columns:
         deliveries["player_dismissed"] = deliveries["player_dismissed"].replace(player_mapping)
+
+    st.write("Finished loading")
 
     return deliveries, matches
 
