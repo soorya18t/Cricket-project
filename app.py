@@ -122,15 +122,23 @@ def load_raw_data():
 
     st.write("Replacing player names...")
 
+    st.write("Replacing player_of_match...")
     matches["player_of_match"] = matches["player_of_match"].replace(player_mapping)
+
+    st.write("Replacing batter...")
     deliveries["batter"] = deliveries["batter"].replace(player_mapping)
+
+    st.write("Replacing bowler...")
     deliveries["bowler"] = deliveries["bowler"].replace(player_mapping)
+
+    st.write("Replacing non_striker...")
     deliveries["non_striker"] = deliveries["non_striker"].replace(player_mapping)
 
+    st.write("Replacing player_dismissed...")
     if "player_dismissed" in deliveries.columns:
-        deliveries["player_dismissed"] = deliveries["player_dismissed"].replace(player_mapping)
+       deliveries["player_dismissed"] = deliveries["player_dismissed"].replace(player_mapping)
 
-    st.write("Finished loading")
+    st.write("Finished load_raw_data")
 
     return deliveries, matches
 
@@ -414,7 +422,7 @@ def section_overview(matches, deliveries):
     fig.update_xaxes(type='category', title_text="IPL Season") 
     fig.update_yaxes(title_text="Total Matches")
     fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", margin=dict(t=10, b=10, l=10, r=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 def section_team_analytics(matches, deliveries):
     st.markdown("##  Team Analytics")
@@ -739,14 +747,16 @@ def main():
     st.sidebar.markdown("<h2>🏏 IPL Cricket Analytics Dashboard</h2>", unsafe_allow_html=True)
     st.sidebar.markdown("---")
     
-    section = st.sidebar.radio("", [
+    section = st.sidebar.radio("Navigation", [
         "📊 Overview", 
         "📈 Team Analytics", 
         "🏏 Player Analytics", 
         "🎭 Match Role Analysis", 
         "🔮 Match Predictor"
          ,#"⚙️ System Setup"
-    ])
+    ],
+    label_visibility="collapsed"
+    )
     
     st.sidebar.markdown("---")
     
