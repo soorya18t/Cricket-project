@@ -402,8 +402,9 @@ def section_overview(matches, deliveries):
     fig.update_xaxes(type='category', title_text="IPL Season") 
     fig.update_yaxes(title_text="Total Matches")
     fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", margin=dict(t=10, b=10, l=10, r=10))
-    st.plotly_chart(fig, width="stretch")
-
+    st.plotly_chart(
+    fig,
+    config={})
 def section_team_analytics(matches, deliveries):
     st.markdown("##  Team Analytics")
     st.markdown("Select a franchise to view their all-time win rates and legendary performers.")
@@ -439,15 +440,19 @@ def section_team_analytics(matches, deliveries):
         st.markdown("**Highest Run Scorers**")
         fig_bat = px.bar(top_batters, x="TOTAL RUNS", y="PLAYER", orientation='h', color="TOTAL RUNS", color_continuous_scale="agsunset", text="TOTAL RUNS")
         fig_bat.update_layout(yaxis={'categoryorder':'total ascending'}, plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", margin=dict(t=10, b=10, l=10, r=10))
-        st.plotly_chart(fig_bat, use_container_width=True)
-        st.dataframe(top_batters, use_container_width=True, hide_index=True)
+        st.plotly_chart(
+        fig_bat,
+        config={})
+        st.dataframe(top_batters, width="stretch", hide_index=True)
         
     with colB:
         st.markdown("**Highest Wicket Takers**")
         fig_bowl = px.bar(top_bowlers, x="TOTAL WICKETS", y="PLAYER", orientation='h', color="TOTAL WICKETS", color_continuous_scale="oryel", text="TOTAL WICKETS")
         fig_bowl.update_layout(yaxis={'categoryorder':'total ascending'}, plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", margin=dict(t=10, b=10, l=10, r=10))
-        st.plotly_chart(fig_bowl, use_container_width=True)
-        st.dataframe(top_bowlers, use_container_width=True, hide_index=True)
+        st.plotly_chart(
+        fig_bowl,
+        config={})
+        st.dataframe(top_bowlers, width="stretch", hide_index=True)
 
 def section_player_analytics(deliveries, player_stats, match_perf):
     st.markdown("##  Player Analytics")
@@ -493,14 +498,13 @@ def section_player_analytics(deliveries, player_stats, match_perf):
             bat_df = pm[pm["balls_faced"] > 0][["date","opponent","venue","runs","balls_faced","fours","sixes","bat_sr"]].sort_values("date", ascending=False)
             bat_df["date"] = pd.to_datetime(bat_df["date"]).dt.strftime("%d %b %Y")
             bat_df.columns = [col.replace("_", " ").upper() for col in bat_df.columns]
-            st.dataframe(bat_df, use_container_width=True, hide_index=True)
+            st.dataframe(bat_df, width="stretch", hide_index=True)
             
             st.markdown("####  Bowling Appearances")
             bowl_df = pm[pm["overs_bowl"] > 0][["date","opponent","venue","overs_bowl","runs_conceded","wickets","economy"]].sort_values("date", ascending=False)
             bowl_df["date"] = pd.to_datetime(bowl_df["date"]).dt.strftime("%d %b %Y")
             bowl_df.columns = [col.replace("_", " ").upper() for col in bowl_df.columns]
-            st.dataframe(bowl_df, use_container_width=True, hide_index=True)
-
+            st.dataframe(bowl_df, width="stretch", hide_index=True)
     with tab3:
         pm = match_perf[match_perf["player"] == player].sort_values("date", ascending=False)
         if pm.empty:
@@ -522,7 +526,7 @@ def section_player_analytics(deliveries, player_stats, match_perf):
             recent_df = recent[["date", "opponent", "runs", "bat_sr", "wickets", "economy"]].copy()
             recent_df["date"] = pd.to_datetime(recent_df["date"]).dt.strftime("%d %b %Y")
             recent_df.columns = [col.replace("_", " ").upper() for col in recent_df.columns]
-            st.dataframe(recent_df, use_container_width=True, hide_index=True)
+            st.dataframe(recent_df, width="stretch", hide_index=True)
 
 def section_match_role_analysis(matches, deliveries, match_perf):
     st.markdown("##  Match Role Analysis")
@@ -560,13 +564,18 @@ def section_match_role_analysis(matches, deliveries, match_perf):
     st.markdown("####  Batting Scorecard")
     bat_display = pm[pm["balls_faced"] > 0][["player","team","runs","balls_faced","fours","sixes","bat_sr"]]
     bat_display.columns = ["PLAYER", "TEAM", "RUNS", "BALLS", "4S", "6S", "STRIKE RATE"]
-    st.dataframe(bat_display.sort_values(["TEAM", "RUNS"], ascending=[True, False]).reset_index(drop=True), use_container_width=True, hide_index=True)
+    st.dataframe(
+    bat_display.sort_values(["TEAM", "RUNS"], ascending=[True, False]).reset_index(drop=True),
+    width="stretch",
+    hide_index=True)
 
     st.markdown("####  Bowling Scorecard")
     bowl_display = pm[pm["overs_bowl"] > 0][["player","team","overs_bowl","runs_conceded","wickets","economy"]]
     bowl_display.columns = ["PLAYER", "TEAM", "OVERS", "RUNS", "WICKETS", "ECONOMY"]
-    st.dataframe(bowl_display.sort_values(["TEAM", "WICKETS"], ascending=[True, False]).reset_index(drop=True), use_container_width=True, hide_index=True)
-
+    st.dataframe(
+    bowl_display.sort_values(["TEAM", "WICKETS"], ascending=[True, False]).reset_index(drop=True),
+    width="stretch",
+    hide_index=True)
 def section_match_predictor(matches, deliveries, player_stats, model):
     st.markdown("##  Advanced Match Predictor")
     st.markdown("Use our Machine Learning model to simulate a match outcome based on customized Playing XIs and venue conditions.")
@@ -637,7 +646,7 @@ def section_match_predictor(matches, deliveries, player_stats, model):
 
     st.markdown("<br>", unsafe_allow_html=True)
     if len(xi_a) in [11, 12] and len(xi_b) in [11, 12] and not set(xi_a) & set(xi_b):
-        if st.button("⚡ Run ML Simulation", type="primary", use_container_width=True):
+        if st.button("⚡ Run ML Simulation", type="primary", width="stretch"):
             
             str_a = compute_team_strength(xi_a, player_stats)
             str_b = compute_team_strength(xi_b, player_stats)
